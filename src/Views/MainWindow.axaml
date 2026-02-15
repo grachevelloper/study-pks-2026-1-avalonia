@@ -4,197 +4,230 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:LibraryManagement.ViewModels"
         xmlns:local="clr-namespace:LibraryManagement.Views"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        xmlns:dataGrid="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+        mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="700"
         x:Class="LibraryManagement.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Управление библиотекой"
-        Width="1000" Height="700">
+        x:CompileBindings="True"
+        Width="1400" Height="700"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid Margin="15" RowDefinitions="Auto,Auto,*,Auto">
 
-        <!-- Заголовок -->
-        <TextBlock Text="Управление библиотекой книг" 
-                   FontSize="24" 
+        <TextBlock Grid.Row="0"
+                   Text="Управление библиотекой книг"
+                   FontSize="28"
                    FontWeight="Bold"
-                   Margin="0 0 0 10"
-                   HorizontalAlignment="Center"/>
+                   HorizontalAlignment="Center"
+                   Margin="0 0 0 20"/>
 
-        <!-- Панель фильтрации -->
-        <Border Grid.Row="1" 
-                BorderBrush="#ccc" 
-                BorderThickness="1" 
-                CornerRadius="5"
-                Padding="10"
-                Margin="0 0 0 10">
+
+        <Border Grid.Row="1"
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0 0 0 20">
             <StackPanel>
-                <TextBlock Text="Фильтры и поиск" 
-                           FontWeight="Bold" 
-                           Margin="0 0 0 10"/>
+                <TextBlock Text="Фильтры и поиск"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 15"/>
 
-                <Grid ColumnDefinitions="*, Auto, *, Auto, *, Auto">
-                    <!-- Поиск по названию -->
+                <Grid ColumnDefinitions="1*,20,1*,20,1*,20,auto">
+
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Поиск по названию:"/>
-                        <TextBox Text="{Binding SearchText}" 
+                        <TextBlock Text="Поиск по названию:"
+                                   Margin="0 0 0 5"
+                                   FontSize="13"/>
+                        <TextBox Text="{Binding SearchText}"
                                  Watermark="Введите название..."
-                                 Width="200"/>
+                                 Height="32"/>
                     </StackPanel>
+
 
                     <Rectangle Grid.Column="1" Width="20"/>
 
-                    <!-- Фильтр по автору -->
+
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Автор:"/>
+                        <TextBlock Text="Автор:"
+                                   Margin="0 0 0 5"
+                                   FontSize="13"/>
                         <ComboBox ItemsSource="{Binding AuthorFilterItems}"
                                   SelectedItem="{Binding SelectedAuthorFilter}"
-                                  Width="200"/>
+                                  Height="32"/>
                     </StackPanel>
 
                     <Rectangle Grid.Column="3" Width="20"/>
 
-                    <!-- Фильтр по жанру -->
+
                     <StackPanel Grid.Column="4">
-                        <TextBlock Text="Жанр:"/>
+                        <TextBlock Text="Жанр:"
+                                   Margin="0 0 0 5"
+                                   FontSize="13"/>
                         <ComboBox ItemsSource="{Binding GenreFilterItems}"
                                   SelectedItem="{Binding SelectedGenreFilter}"
-                                  Width="200"/>
+                                  Height="32"/>
                     </StackPanel>
+
 
                     <Rectangle Grid.Column="5" Width="20"/>
 
-                    <!-- Кнопка сброса -->
-                    <StackPanel Grid.Column="6" VerticalAlignment="Bottom">
+
+                    <StackPanel Grid.Column="6"
+                                VerticalAlignment="Center">
                         <Button Content="Сбросить фильтры"
                                 Command="{Binding ClearFiltersCommand}"
-                                Width="120"/>
+                                Height="32"
+                                Padding="15 0"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
         </Border>
 
-    
-        <DataGrid Grid.Row="2"
-                  ItemsSource="{Binding Books}"
-                  SelectedItem="{Binding SelectedBook}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  Margin="0 0 0 10">
-            
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" 
-                                    Binding="{Binding Id}" 
-                                    Width="50"/>
-                
-                <DataGridTextColumn Header="Название" 
-                                    Binding="{Binding Title}" 
-                                    Width="2*"/>
-                
-                <DataGridTextColumn Header="Автор" 
-                                    Binding="{Binding Author.FirstName}" 
-                                    Width="*">
-                    <DataGridTextColumn.Binding>
+
+        <dataGrid:DataGrid Grid.Row="2"
+                           ItemsSource="{Binding Books}"
+                           SelectedItem="{Binding SelectedBook}"
+                           AutoGenerateColumns="False"
+                           IsReadOnly="True"
+                           Margin="0 0 0 20"
+                           BorderBrush="#e0e0e0"
+                           BorderThickness="1"
+                           CornerRadius="8"
+                           Background="White"
+                           RowBackground="White"
+                         >
+
+            <dataGrid:DataGrid.Columns>
+                <dataGrid:DataGridTextColumn Header="ID"
+                                             Binding="{Binding Id}"
+                                             Width="60"/>
+
+                <dataGrid:DataGridTextColumn Header="Название"
+                                             Binding="{Binding Title}"
+                                             Width="250"/>
+
+                <dataGrid:DataGridTextColumn Header="Автор"
+                                             Width="200">
+                    <dataGrid:DataGridTextColumn.Binding>
                         <MultiBinding StringFormat="{}{0} {1}">
                             <Binding Path="Author.FirstName"/>
                             <Binding Path="Author.LastName"/>
                         </MultiBinding>
-                    </DataGridTextColumn.Binding>
-                </DataGridTextColumn>
-                
-                <DataGridTextColumn Header="Жанр" 
-                                    Binding="{Binding Genre.Name}" 
-                                    Width="*"/>
-                
-                <DataGridTextColumn Header="Год" 
-                                    Binding="{Binding PublishYear}" 
-                                    Width="70"/>
-                
-                <DataGridTextColumn Header="ISBN" 
-                                    Binding="{Binding ISBN}" 
-                                    Width="120"/>
-                
-                <DataGridTextColumn Header="В наличии" 
-                                    Binding="{Binding QuantityInStock}" 
-                                    Width="70"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    </dataGrid:DataGridTextColumn.Binding>
+                </dataGrid:DataGridTextColumn>
 
-        <!-- Нижняя панель с кнопками и статистикой -->
+                <dataGrid:DataGridTextColumn Header="Жанр"
+                                             Binding="{Binding Genre.Name}"
+                                             Width="150"/>
+
+                <dataGrid:DataGridTextColumn Header="Год"
+                                             Binding="{Binding PublishYear}"
+                                             Width="80"/>
+
+                <dataGrid:DataGridTextColumn Header="ISBN"
+                                             Binding="{Binding ISBN}"
+                                             Width="150"/>
+
+                <dataGrid:DataGridTextColumn Header="В наличии"
+                                             Binding="{Binding QuantityInStock}"
+                                             Width="100"/>
+            </dataGrid:DataGrid.Columns>
+        </dataGrid:DataGrid>
+
+
         <Border Grid.Row="3"
-                BorderBrush="#ccc" 
-                BorderThickness="1" 
-                CornerRadius="5"
-                Padding="10">
-            <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto, *">
-                
-                <!-- Статистика -->
-                <StackPanel Grid.Column="1" 
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="15">
+            <Grid ColumnDefinitions="*,auto,auto,auto,auto,auto,*">
+
+                <StackPanel Grid.Column="1"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
-                            Margin="0 0 20 0">
-                    <TextBlock Text="Всего книг: " FontWeight="Bold"/>
-                    <TextBlock Text="{Binding TotalBooksCount}" Margin="0 0 20 0"/>
-                    
-                    <TextBlock Text="Отфильтровано: " FontWeight="Bold"/>
-                    <TextBlock Text="{Binding FilteredBooksCount}"/>
+                            Spacing="20">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Всего: "
+                                   FontWeight="Bold"
+                                   FontSize="14"/>
+                        <TextBlock Text="{Binding TotalBooksCount}"
+                                   FontSize="14"
+                                   Foreground="#2196F3"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Показано: "
+                                   FontWeight="Bold"
+                                   FontSize="14"/>
+                        <TextBlock Text="{Binding FilteredBooksCount}"
+                                   FontSize="14"
+                                   Foreground="#4CAF50"/>
+                    </StackPanel>
                 </StackPanel>
 
-                <!-- Кнопки управления -->
-                <StackPanel Grid.Column="2" 
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Right"
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
                             Spacing="10">
-                    
-                    <Button Content="Управление авторами"
+
+                    <Button Content="Авторы"
                             Command="{Binding ManageAuthorsCommand}"
-                            Padding="15 5"/>
-                    
-                    <Button Content="Управление жанрами"
+                            Padding="20 8"
+                            FontSize="13"
+                            ToolTip.Tip="Управление авторами"/>
+
+                    <Button Content="Жанры"
                             Command="{Binding ManageGenresCommand}"
-                            Padding="15 5"/>
-                    
-                    <Button Content="Добавить книгу"
+                            Padding="20 8"
+                            FontSize="13"
+                            ToolTip.Tip="Управление жанрами"/>
+
+                    <Button Content="➕ Добавить"
                             Command="{Binding AddBookCommand}"
                             Classes="primary"
-                            Padding="15 5"/>
-                    
-                    <Button Content="Редактировать"
+                            Padding="20 8"
+                            FontSize="13"/>
+
+                    <Button Content="✏️ Редактировать"
                             Command="{Binding EditBookCommand}"
                             IsEnabled="{Binding SelectedBook, Converter={x:Static ObjectConverters.IsNotNull}}"
-                            Padding="15 5"/>
-                    
-                    <Button Content="Удалить"
+                            Padding="20 8"
+                            FontSize="13"/>
+
+                    <Button Content="🗑️ Удалить"
                             Command="{Binding DeleteBookCommand}"
                             IsEnabled="{Binding SelectedBook, Converter={x:Static ObjectConverters.IsNotNull}}"
                             Classes="danger"
-                            Padding="15 5"/>
+                            Padding="20 8"
+                            FontSize="13"/>
                 </StackPanel>
 
-                <Rectangle Grid.Column="5" Width="0"/>
+                <Rectangle Grid.Column="6" Width="0"/>
             </Grid>
         </Border>
 
-  
-        <Grid Grid.RowSpan="4" 
-              Background="#80ffffff" 
-              IsVisible="{Binding IsLoading}">
-            <StackPanel VerticalAlignment="Center" 
+
+        <Grid Grid.RowSpan="4"
+              Background="#CCFFFFFF"
+              IsVisible="{Binding IsLoading}"
+              ZIndex="100">
+            <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" 
-                            Width="200" 
-                            Height="20"/>
-                <TextBlock Text="Загрузка данных..." 
-                           Margin="0 10 0 0"
-                           HorizontalAlignment="Center"/>
+                <ProgressBar IsIndeterminate="True"
+                             Width="300"
+                             Height="4"/>
+                <TextBlock Text="Загрузка данных..."
+                           Margin="0 15 0 0"
+                           HorizontalAlignment="Center"
+                           FontSize="14"/>
             </StackPanel>
         </Grid>
     </Grid>
