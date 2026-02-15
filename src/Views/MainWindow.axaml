@@ -1,36 +1,201 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:LibraryManagement.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+        xmlns:vm="using:LibraryManagement.ViewModels"
+        xmlns:local="clr-namespace:LibraryManagement.Views"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="LibraryManagement.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="LibraryManagement">
+        Title="Управление библиотекой"
+        Width="1000" Height="700">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-  <StackPanel>
-    <Border Margin="5" CornerRadius="10" Background="LightBlue">
-        <TextBlock Margin="5"
-            HorizontalAlignment="Center"
-            FontSize="24"
-            Text="Temperature Converter">
-        </TextBlock>
-    </Border>
-       <Grid ShowGridLines="True" Margin="5" 
-              ColumnDefinitions="120, 100"
-              RowDefinitions="Auto, Auto">
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Celsius</TextBlock>
-            <TextBox Grid.Row="0" Grid.Column="1" Margin="0 5" Text="0" Name="Celsius"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">Fahrenheit</TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="1" Margin="0 5" Text="0" Name="Fahrenheit"/>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="Управление библиотекой книг" 
+                   FontSize="24" 
+                   FontWeight="Bold"
+                   Margin="0 0 0 10"
+                   HorizontalAlignment="Center"/>
+
+        <!-- Панель фильтрации -->
+        <Border Grid.Row="1" 
+                BorderBrush="#ccc" 
+                BorderThickness="1" 
+                CornerRadius="5"
+                Padding="10"
+                Margin="0 0 0 10">
+            <StackPanel>
+                <TextBlock Text="Фильтры и поиск" 
+                           FontWeight="Bold" 
+                           Margin="0 0 0 10"/>
+
+                <Grid ColumnDefinitions="*, Auto, *, Auto, *, Auto">
+                    <!-- Поиск по названию -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Поиск по названию:"/>
+                        <TextBox Text="{Binding SearchText}" 
+                                 Watermark="Введите название..."
+                                 Width="200"/>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="1" Width="20"/>
+
+                    <!-- Фильтр по автору -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Автор:"/>
+                        <ComboBox ItemsSource="{Binding AuthorFilterItems}"
+                                  SelectedItem="{Binding SelectedAuthorFilter}"
+                                  Width="200"/>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="3" Width="20"/>
+
+                    <!-- Фильтр по жанру -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Жанр:"/>
+                        <ComboBox ItemsSource="{Binding GenreFilterItems}"
+                                  SelectedItem="{Binding SelectedGenreFilter}"
+                                  Width="200"/>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="5" Width="20"/>
+
+                    <!-- Кнопка сброса -->
+                    <StackPanel Grid.Column="6" VerticalAlignment="Bottom">
+                        <Button Content="Сбросить фильтры"
+                                Command="{Binding ClearFiltersCommand}"
+                                Width="120"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+    
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Books}"
+                  SelectedItem="{Binding SelectedBook}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Margin="0 0 0 10">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" 
+                                    Binding="{Binding Id}" 
+                                    Width="50"/>
+                
+                <DataGridTextColumn Header="Название" 
+                                    Binding="{Binding Title}" 
+                                    Width="2*"/>
+                
+                <DataGridTextColumn Header="Автор" 
+                                    Binding="{Binding Author.FirstName}" 
+                                    Width="*">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding StringFormat="{}{0} {1}">
+                            <Binding Path="Author.FirstName"/>
+                            <Binding Path="Author.LastName"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                
+                <DataGridTextColumn Header="Жанр" 
+                                    Binding="{Binding Genre.Name}" 
+                                    Width="*"/>
+                
+                <DataGridTextColumn Header="Год" 
+                                    Binding="{Binding PublishYear}" 
+                                    Width="70"/>
+                
+                <DataGridTextColumn Header="ISBN" 
+                                    Binding="{Binding ISBN}" 
+                                    Width="120"/>
+                
+                <DataGridTextColumn Header="В наличии" 
+                                    Binding="{Binding QuantityInStock}" 
+                                    Width="70"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Нижняя панель с кнопками и статистикой -->
+        <Border Grid.Row="3"
+                BorderBrush="#ccc" 
+                BorderThickness="1" 
+                CornerRadius="5"
+                Padding="10">
+            <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto, *">
+                
+                <!-- Статистика -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="0 0 20 0">
+                    <TextBlock Text="Всего книг: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding TotalBooksCount}" Margin="0 0 20 0"/>
+                    
+                    <TextBlock Text="Отфильтровано: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding FilteredBooksCount}"/>
+                </StackPanel>
+
+                <!-- Кнопки управления -->
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right"
+                            Spacing="10">
+                    
+                    <Button Content="Управление авторами"
+                            Command="{Binding ManageAuthorsCommand}"
+                            Padding="15 5"/>
+                    
+                    <Button Content="Управление жанрами"
+                            Command="{Binding ManageGenresCommand}"
+                            Padding="15 5"/>
+                    
+                    <Button Content="Добавить книгу"
+                            Command="{Binding AddBookCommand}"
+                            Classes="primary"
+                            Padding="15 5"/>
+                    
+                    <Button Content="Редактировать"
+                            Command="{Binding EditBookCommand}"
+                            IsEnabled="{Binding SelectedBook, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Padding="15 5"/>
+                    
+                    <Button Content="Удалить"
+                            Command="{Binding DeleteBookCommand}"
+                            IsEnabled="{Binding SelectedBook, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Classes="danger"
+                            Padding="15 5"/>
+                </StackPanel>
+
+                <Rectangle Grid.Column="5" Width="0"/>
+            </Grid>
+        </Border>
+
+  
+        <Grid Grid.RowSpan="4" 
+              Background="#80ffffff" 
+              IsVisible="{Binding IsLoading}">
+            <StackPanel VerticalAlignment="Center" 
+                        HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                            Width="200" 
+                            Height="20"/>
+                <TextBlock Text="Загрузка данных..." 
+                           Margin="0 10 0 0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
         </Grid>
-    <Button HorizontalAlignment="Center" Click="Button_OnClick">Calculate</Button>
-</StackPanel>
+    </Grid>
 </Window>
